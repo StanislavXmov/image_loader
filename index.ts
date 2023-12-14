@@ -10,10 +10,25 @@ const catalog = '../static/images';
 const upload = multer({dest: catalog});
 const type = upload.array('filedata', 12);
 
+app.use(express.static(catalog));
 app.use(express.json());
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/getImages', (req, res) => {
+	const images: {array: string[]} = {
+		array: [],
+	}
+	fs.readdir(catalog, function(err, filenames){
+    if (filenames) {
+      for (let item of filenames) {
+        images.array.push(item);
+      }
+      res.send(images); 
+    }
+  });
 });
 
 app.post('/upload', type, (req, res) => {
