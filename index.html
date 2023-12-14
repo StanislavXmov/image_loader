@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Load image</title>
+</head>
+<body>
+  <form id="form">
+    <span class="title">Upload</span>
+    <div class="inputControl">
+      <input type="file" multiple class="fileInput" id="fileInput" name="filedata" >
+      <label class="fileLabel" for="fileInput">Choose file</label>
+    </div>
+    <button id="loadImagesBtn">Upload Images</button>
+  </form>
+  <script>
+    const input = document.getElementById('fileInput');
+    const btn = document.getElementById('loadImagesBtn');
+    const form = document.getElementById('form');
+
+    let files = null;
+
+    input.addEventListener('change', (e) => {
+      if (input.files.length > 0) {
+        files = input.files;
+      }
+    });
+
+    async function load(files) {
+      const formData = new FormData();
+      for(let i = 0; i < files.length; i++){
+        formData.append('filedata', files[i])
+      }
+      
+      let resp = await fetch('/upload', {
+        method: 'POST',
+        body: formData
+      });
+    }
+
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (files) {
+        load(files);
+        form.reset();
+      }
+    });
+
+  </script>
+</body>
+</html>
