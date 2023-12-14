@@ -4,26 +4,137 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Load image</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+
+      font-family: monospace;
+    }
+
+    body {
+      max-width: 1024px;
+      margin: 0 auto;
+      padding: 32px 16px;
+
+      background: #1E1E1E;
+    }
+
+    #form {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .title {
+      font-size: 24px;
+      color: #CCC9C7;
+    }
+
+    .fileInput {
+      display: none;
+    }
+
+    .fileLabel {
+      width: 64px;
+      height: 64px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      border: 2px solid #858585;
+      border-radius: 8px;
+
+      cursor: pointer;
+    }
+
+    .fileLabel:hover {
+      border-color: #CCC9C7;
+    }
+
+    .fileLabel:hover svg path {
+      stroke: #CCC9C7;
+    }
+
+    .btn {
+      width: 256px;
+      height: 64px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      outline: none;
+      background: #1E1E1E;
+
+      border: 2px solid #858585;
+      border-radius: 8px;
+
+      cursor: pointer;
+      font-size: 24px;
+      color: #858585;
+    }
+
+    .btn:hover {
+      border-color: #CCC9C7;
+      color: #CCC9C7;
+    }
+
+    .btn.disabled {
+      cursor: not-allowed;
+      border-color: #555555;
+      color: #555555;
+    }
+
+    .imageWrapper {
+      display: none;
+      grid-template-columns: repeat(4, 128px);
+      grid-template-rows: repeat(4, 128px);
+      gap: 16px;
+    }
+
+    .image {
+      width: 128px;
+      height: 128px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+  </style>
 </head>
 <body>
   <form id="form">
     <span class="title">Upload</span>
     <div class="inputControl">
       <input type="file" multiple class="fileInput" id="fileInput" name="filedata" >
-      <label class="fileLabel" for="fileInput">Choose file</label>
+      <label class="fileLabel" for="fileInput">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="-2.285 -2.285 64 64" height="32" width="32"><g id="upload-file"><path id="Vector" stroke="#858585" stroke-linecap="round" stroke-linejoin="round" d="M53.0625 53.0625c0 1.125774 -0.44742299999999996 2.205702 -1.2433605 3.0016395s-1.8758655000000002 1.2433605 -3.0016395 1.2433605h-38.205c-1.1258589 0 -2.20557465 -0.44742299999999996 -3.00168195 -1.2433605C6.8147532 55.268202 6.3675 54.188274 6.3675 53.0625v-46.695c0 -1.1258589 0.4472532 -2.20557465 1.24331805 -3.001669215C8.40692535 2.569740465 9.486641100000002 2.1225 10.6125 2.1225H38.205L53.0625 16.98v36.0825Z" stroke-width="4.57"></path><path id="vector 377" stroke="#858585" stroke-linecap="round" stroke-linejoin="round" d="m38.205 27.5925 -8.49 -8.49 -8.49 8.49" stroke-width="4.57"></path><path id="vector 378" stroke="#858585" stroke-linecap="round" stroke-linejoin="round" d="M29.715 19.1025 29.715 42.45" stroke-width="4.57"></path></g></svg>
+      </label>
     </div>
-    <button id="loadImagesBtn">Upload Images</button>
+    <button class="btn disabled" id="loadImagesBtn" disabled>Upload Images</button>
+    <div id="imageWrapper" class="imageWrapper"></div>
   </form>
   <script>
     const input = document.getElementById('fileInput');
     const btn = document.getElementById('loadImagesBtn');
     const form = document.getElementById('form');
+    const imageWrapper = document.getElementById('imageWrapper');
 
     let files = null;
 
     input.addEventListener('change', (e) => {
       if (input.files.length > 0) {
         files = input.files;
+
+        btn.classList.remove('disabled');
+        btn.disabled = false;
+
+        imageWrapper.style.display = 'grid';
+        for (const file of files) {
+          const image = document.createElement('img');
+          image.classList.add('image');
+          const url = URL.createObjectURL(file);
+          image.src = url;
+          imageWrapper.append(image);
+        }
       }
     });
 
@@ -44,6 +155,10 @@
       if (files) {
         load(files);
         form.reset();
+        imageWrapper.innerHTML = '';
+        imageWrapper.style.display = 'none';
+        btn.classList.add('disabled');
+        btn.disabled = true;
       }
     });
 
